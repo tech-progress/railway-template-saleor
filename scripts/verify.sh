@@ -8,6 +8,8 @@ for file in "${required[@]}"; do test -f "${template_root}/${file}" || { echo "M
 version="$(<"${template_root}/VERSION")"; [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 grep -Fq "## [${version}] - 2026-07-31" "${template_root}/CHANGELOG.md"
 for file in README.md PUBLISHING.md; do grep -Fq "current template release is \`v${version}\`" "${template_root}/${file}"; done
+publish_description="$(grep -E '^  --description "' "${template_root}/PUBLISHING.md" | cut -d '"' -f 2)"
+[[ -n "${publish_description}" && ${#publish_description} -le 75 ]]
 
 POSTGRES_PASSWORD=verify-postgres SECRET_KEY=verify-secret-key-with-more-than-fifty-random-characters ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=verify-admin-password MINIO_ROOT_PASSWORD=verify-minio-password docker compose -f "${template_root}/compose.yaml" config --quiet
 for file in template-buckets.json template-defaults.json template-descriptions.json template-networking.json template-volumes.json; do jq empty "${template_root}/${file}"; done
