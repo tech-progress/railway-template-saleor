@@ -4,4 +4,3 @@
 
 - Add Saleor API, worker, dashboard, PostgreSQL, Valkey, and Railway Bucket topology.
 - Add idempotent migrations, administrator bootstrap, and local/remote smoke tooling.
-

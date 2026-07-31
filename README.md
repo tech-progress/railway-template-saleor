@@ -24,7 +24,18 @@ The worker starts with `CELERY_WORKER_CONCURRENCY=2` and recycles children after
 
 ## Local verification
 
-Copy `.env.example` to `.env`, replace every placeholder, then run:
+Copy `.env.example` to `.env` and configure these local-only values. Railway generates or wires their production equivalents from the template graph.
+
+| Variable | Required locally | Purpose |
+| --- | --- | --- |
+| `POSTGRES_PASSWORD` | Yes | Password shared by Saleor and the local PostgreSQL service. |
+| `SECRET_KEY` | Yes | Saleor application secret; use at least 50 random characters. |
+| `ADMIN_EMAIL` | No | Initial administrator email; defaults to `admin@example.com`. |
+| `ADMIN_PASSWORD` | Yes | Initial administrator password, applied only when the account is first created. |
+| `MINIO_ROOT_USER` | No | Local MinIO access key; defaults to `saleor-local`. |
+| `MINIO_ROOT_PASSWORD` | Yes | Local MinIO secret key used by the API and worker. |
+
+After replacing the required placeholders, run:
 
 ```bash
 docker compose up --build -d

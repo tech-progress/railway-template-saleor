@@ -28,4 +28,3 @@ Configure SMTP through `EMAIL_URL` before enabling customer email flows. A store
 - PostgreSQL 15 with a persistent volume
 - Valkey 8.1 with a persistent volume
 - A private Railway Bucket for public and private media objects
-
