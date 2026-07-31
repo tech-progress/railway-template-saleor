@@ -9,7 +9,7 @@ Publish only after every service reports `SUCCESS`, current replicas are running
 ```bash
 railway templates publish TEMPLATE_ID \
   --category Other \
-  --description "Saleor commerce with Dashboard, worker, PostgreSQL, Valkey, and durable media." \
+  --description "Saleor commerce with Dashboard, worker, PostgreSQL, Valkey, and media." \
   --readme-file MARKETPLACE.md \
   --json
 ```
