@@ -2,7 +2,7 @@
 set -euo pipefail
 
 template_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-required=(.dockerignore .env.example .gitignore .railway/railway.ts CHANGELOG.md Dockerfile FINDINGS.md LICENSE_REVIEW.md MARKETPLACE.md PUBLISHING.md README.md SUPPORT.md UPGRADE.md VERSION bun.lock compose.yaml package.json template-buckets.json template-defaults.json template-descriptions.json template-networking.json template-volumes.json scripts/audit-template.sh scripts/bootstrap.py scripts/load-jwt-key.py scripts/restore-template-draft.sh scripts/smoke.sh scripts/start-api.sh scripts/start-worker.sh scripts/storage-smoke.py scripts/verify.sh scripts/with-jwt-key.sh)
+required=(.dockerignore .env.example .gitignore .railway/railway.ts CHANGELOG.md Dockerfile LICENSE_REVIEW.md MARKETPLACE.md PUBLISHING.md README.md SUPPORT.md UPGRADE.md VERSION bun.lock compose.yaml package.json template-buckets.json template-defaults.json template-descriptions.json template-networking.json template-volumes.json scripts/audit-template.sh scripts/bootstrap.py scripts/load-jwt-key.py scripts/restore-template-draft.sh scripts/smoke.sh scripts/start-api.sh scripts/start-worker.sh scripts/storage-smoke.py scripts/verify.sh scripts/with-jwt-key.sh)
 for file in "${required[@]}"; do test -f "${template_root}/${file}" || { echo "Missing ${file}" >&2; exit 1; }; done
 
 version="$(<"${template_root}/VERSION")"; [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]

@@ -6,6 +6,7 @@ workspace_id="${2:?Usage: ./scripts/restore-template-draft.sh TEMPLATE_ID WORKSP
 template_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 railway_config_path="${RAILWAY_CONFIG_PATH:-${HOME}/.railway/config.json}"
 railway_access_token="$(jq -r '.user.accessToken' "${railway_config_path}")"
+postgres_service_id="$(uuidgen | tr '[:upper:]' '[:lower:]')"
 graph_payload="$(cd "${template_root}" && ./node_modules/.bin/railway-iac-ts .railway/railway.ts)"
 draft_payload="$(railway api 'query Draft($id: String!) { template(id: $id) { serializedConfig } }' --var "id=${template_id}" --compact)"
 
@@ -16,11 +17,23 @@ variables="$({
     --slurpfile descriptions "${template_root}/template-descriptions.json" \
     --slurpfile volumes "${template_root}/template-volumes.json" \
     --slurpfile networking "${template_root}/template-networking.json" \
-    --arg id "${template_id}" --arg workspaceId "${workspace_id}" '
+    --arg id "${template_id}" --arg workspaceId "${workspace_id}" \
+    --arg postgresServiceId "${postgres_service_id}" '
       $draft.data.template.serializedConfig as $config |
       ($graph.graph.resources | map(select(.type == "service")) | map({key:.name,value:.}) | from_entries) as $desired |
-      reduce ($config.services | to_entries[]) as $service (
-        $config;
+      (if ([$config.services[] | .name] | index("Saleor PostgreSQL")) == null then
+        $config |
+        .services[$postgresServiceId] = {
+          deploy:{restartPolicyMaxRetries:10,restartPolicyType:"ON_FAILURE"},
+          icon:null,
+          name:"Saleor PostgreSQL",
+          source:{},
+          variables:{},
+          volumeMounts:{($postgresServiceId):{}}
+        }
+      else $config end) as $completeConfig |
+      reduce ($completeConfig.services | to_entries[]) as $service (
+        $completeConfig;
         if $desired[$service.value.name].source.type == "image" then
           .services[$service.key].source.image = $desired[$service.value.name].source.image |
           del(.services[$service.key].source.repo, .services[$service.key].source.branch, .services[$service.key].source.rootDirectory, .services[$service.key].build)
@@ -66,4 +79,3 @@ response="$(curl --compressed --fail --silent --show-error https://backboard.rai
   --header "Authorization: Bearer ${railway_access_token}" --header "Content-Type: application/json" --data-binary "${request}")"
 jq -e '.data.templateUpsertConfig.id != null and ((.errors // []) | length == 0)' <<<"${response}" >/dev/null
 echo "Restored Saleor template ${template_id} sources, commands, variables, volumes, and networking."
-

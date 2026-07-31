@@ -10,6 +10,7 @@ graph_json="$(cd "${template_root}" && ./node_modules/.bin/railway-iac-ts .railw
 [[ "$(jq -r '.data.template.name' <<<"${template_json}")" == "Saleor commerce" ]]
 [[ -z "${expected_status}" || "$(jq -r '.data.template.status' <<<"${template_json}")" == "${expected_status}" ]]
 [[ "$(jq -r '.data.template.serializedConfig.services | [.[] | .name] | sort | join("\n")' <<<"${template_json}")" == $'Saleor API\nSaleor Dashboard\nSaleor PostgreSQL\nSaleor Valkey\nSaleor Worker' ]]
+[[ "$(jq -r '.data.template.serializedConfig.buckets | [.[] | .name] | sort | join("\n")' <<<"${template_json}")" == "Saleor Media" ]]
 
 failures=0
 for service_name in "Saleor API" "Saleor Dashboard" "Saleor PostgreSQL" "Saleor Valkey" "Saleor Worker"; do
@@ -49,5 +50,4 @@ for service_name in "Saleor API" "Saleor Dashboard"; do
   [[ "${actual}" == "${expected}" ]] || failures=$((failures + 1))
 done
 (( failures == 0 )) || { echo "Saleor template audit failed with ${failures} mismatch(es)." >&2; exit 1; }
-echo "Template ${template_id} matches Saleor sources, commands, defaults, volumes, and networking."
-
+echo "Template ${template_id} matches Saleor sources, commands, defaults, bucket, volumes, and networking."
