@@ -1,0 +1,4 @@
+{
+  "Saleor PostgreSQL": {"mountPath":"/var/lib/postgresql/data","sizeMB":5000},
+  "Saleor Valkey": {"mountPath":"/data","sizeMB":1000}
+}

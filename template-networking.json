@@ -1,0 +1,4 @@
+{
+  "Saleor API": {"publicPort":8000},
+  "Saleor Dashboard": {"publicPort":80}
+}

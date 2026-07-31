@@ -1,0 +1,118 @@
+x-saleor-env: &saleor-env
+  DATABASE_URL: postgresql://saleor:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/saleor
+  CACHE_URL: redis://cache:6379/0
+  CELERY_BROKER_URL: redis://cache:6379/1
+  CELERY_WORKER_CONCURRENCY: "2"
+  CELERY_MAX_TASKS_PER_CHILD: "1000"
+  SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+  DEBUG: "False"
+  SEND_USAGE_TELEMETRY: "False"
+  ALLOWED_HOSTS: localhost,127.0.0.1,api
+  ALLOWED_CLIENT_HOSTS: "*"
+  ALLOWED_GRAPHQL_ORIGINS: http://localhost:9000
+  DASHBOARD_URL: http://localhost:9000/
+  PUBLIC_URL: http://localhost:8000/
+  DEFAULT_FROM_EMAIL: noreply@example.com
+  EMAIL_URL: ""
+  HTTP_IP_FILTER_ENABLED: "True"
+  HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS: "True"
+  PLAYGROUND_ENABLED: "True"
+  TELEMETRY_TRACER_CLASS: saleor.webhook.circuit_breaker.tracer.NoopTelemetryTracer
+  AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-saleor-local}
+  AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+  AWS_MEDIA_BUCKET_NAME: saleor-media
+  AWS_MEDIA_PRIVATE_BUCKET_NAME: saleor-media
+  AWS_S3_ENDPOINT_URL: http://minio:9000
+  AWS_S3_REGION_NAME: us-east-1
+  AWS_QUERYSTRING_AUTH: "True"
+  AWS_QUERYSTRING_EXPIRE: "3600"
+  AWS_AUTO_CREATE_BUCKET: "true"
+
+services:
+  postgres:
+    image: postgres:15-alpine@sha256:3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: saleor
+      POSTGRES_USER: saleor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saleor -d saleor"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  cache:
+    image: valkey/valkey:8.1-alpine@sha256:a038175878d66b9d274fbf8be73c0305e93798b83917647f167e18cef3c71eec
+    command: ["valkey-server", "--appendonly", "yes"]
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    command: ["server", "/data"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-saleor-local}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: *saleor-env
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/template/start-worker.sh"]
+    environment: *saleor-env
+    depends_on:
+      api:
+        condition: service_healthy
+
+  dashboard:
+    image: ghcr.io/saleor/saleor-dashboard:3.23.20@sha256:c1ce2f625316bf1e02dd8070335bf3bdbaeaa388e14b094d35dd5db2f9b60cf3
+    environment:
+      API_URL: http://localhost:8000/graphql/
+      APP_MOUNT_URI: /
+    ports:
+      - "9000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  postgres-data:
+  cache-data:
+  minio-data:

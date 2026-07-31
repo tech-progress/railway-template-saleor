@@ -1,0 +1,22 @@
+{
+  "Saleor PostgreSQL": {
+    "POSTGRES_PASSWORD": "Generated password for the private Saleor database."
+  },
+  "Saleor API": {
+    "ADMIN_EMAIL": "Email address for the administrator created on the first boot.",
+    "ADMIN_PASSWORD": "Generated first-boot administrator password; changing it later does not rotate the account.",
+    "SECRET_KEY": "Generated Django signing secret shared with the worker.",
+    "EMAIL_URL": "Optional dj-email-url SMTP connection string for transactional email.",
+    "AWS_MEDIA_BUCKET_NAME": "Railway Bucket name used for durable Saleor media.",
+    "AWS_MEDIA_PRIVATE_BUCKET_NAME": "Railway Bucket name used for protected Saleor files."
+  },
+  "Saleor Worker": {
+    "ADMIN_EMAIL": "Must match the API administrator email.",
+    "ADMIN_PASSWORD": "Must match the API first-boot administrator password.",
+    "SECRET_KEY": "Must match the API Django signing secret.",
+    "EMAIL_URL": "Optional dj-email-url SMTP connection string shared with the API."
+  },
+  "Saleor Dashboard": {
+    "API_URL": "Public Saleor GraphQL endpoint injected into the Dashboard at startup."
+  }
+}
