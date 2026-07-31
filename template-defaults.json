@@ -73,7 +73,9 @@
     "AWS_AUTO_CREATE_BUCKET": "false"
   },
   "Saleor Dashboard": {
+    "PORT": "80",
     "API_URL": "https://${{Saleor API.RAILWAY_PUBLIC_DOMAIN}}/graphql/",
-    "APP_MOUNT_URI": "/"
+    "APP_MOUNT_URI": "/",
+    "NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE": "1"
   }
 }

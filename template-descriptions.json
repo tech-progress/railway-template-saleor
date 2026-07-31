@@ -17,6 +17,7 @@
     "EMAIL_URL": "Optional dj-email-url SMTP connection string shared with the API."
   },
   "Saleor Dashboard": {
+    "PORT": "Internal HTTP port used by Railway health checks and routing.",
     "API_URL": "Public Saleor GraphQL endpoint injected into the Dashboard at startup."
   }
 }

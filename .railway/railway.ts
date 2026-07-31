@@ -106,8 +106,10 @@ export default defineRailway(() => {
     healthcheck: "/",
     healthcheckTimeout: 120,
     env: {
+      PORT: "80",
       API_URL: "https://${{Saleor API.RAILWAY_PUBLIC_DOMAIN}}/graphql/",
       APP_MOUNT_URI: "/",
+      NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE: "1",
     },
   });
 
