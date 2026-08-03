@@ -2,6 +2,8 @@
 
 The current template release is `v1.0.0`. It deploys Saleor Core `3.23.23`, Dashboard `3.23.20`, a Celery worker with Beat, PostgreSQL 15, Valkey 8.1, and a private Railway Bucket for shared media. All runtime images are pinned by digest.
 
+Upstream project: [Saleor](https://saleor.io).
+
 ## Deploy on Railway
 
 Set `ADMIN_EMAIL` if the default is unsuitable; Railway generates `ADMIN_PASSWORD`, `SECRET_KEY`, and the database password. The API creates the first administrator without resetting an existing password, applies migrations on startup, and exposes `/graphql/`. Open the Dashboard domain and sign in with those administrator values.
