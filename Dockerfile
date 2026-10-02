@@ -1,4 +1,4 @@
-FROM ghcr.io/saleor/saleor:3.23.23@sha256:3fc21b69182fd0d94731e12c2121faeef022ddf6bbf1398e12e19cb12add2049
+FROM ghcr.io/saleor/saleor:3.23.37@sha256:42ac24ce691f6b1a1f31f6e80907b6ccf77e4701bbf489e339affe9e959b7dc3
 
 USER root
 COPY scripts/bootstrap.py scripts/load-jwt-key.py scripts/start-api.sh scripts/start-worker.sh scripts/storage-smoke.py scripts/with-jwt-key.sh /template/

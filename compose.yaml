@@ -97,7 +97,7 @@ services:
         condition: service_healthy
 
   dashboard:
-    image: ghcr.io/saleor/saleor-dashboard:3.23.20@sha256:c1ce2f625316bf1e02dd8070335bf3bdbaeaa388e14b094d35dd5db2f9b60cf3
+    image: ghcr.io/saleor/saleor-dashboard:3.23.38@sha256:4ad44cb07f403a44a09ff95d1e78af041f70b3c0ee452e34c187aede7ede146b
     environment:
       API_URL: http://localhost:8000/graphql/
       APP_MOUNT_URI: /

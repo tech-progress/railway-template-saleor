@@ -19,7 +19,7 @@ const POSTGRES_IMAGE =
 const VALKEY_IMAGE =
   "valkey/valkey:8.1-alpine@sha256:a038175878d66b9d274fbf8be73c0305e93798b83917647f167e18cef3c71eec";
 const DASHBOARD_IMAGE =
-  "ghcr.io/saleor/saleor-dashboard:3.23.20@sha256:c1ce2f625316bf1e02dd8070335bf3bdbaeaa388e14b094d35dd5db2f9b60cf3";
+  "ghcr.io/saleor/saleor-dashboard:3.23.38@sha256:4ad44cb07f403a44a09ff95d1e78af041f70b3c0ee452e34c187aede7ede146b";
 
 export default defineRailway(() => {
   const databaseData = volume("Saleor PostgreSQL Data", { sizeMB: 5_000 });

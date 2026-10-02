@@ -1,8 +1,8 @@
 # Saleor commerce Railway template
 
-The current template release is `v1.0.0`. It deploys Saleor Core `3.23.23`, Dashboard `3.23.20`, a Celery worker with Beat, PostgreSQL 15, Valkey 8.1, and a private Railway Bucket for shared media. All runtime images are pinned by digest.
+The current template release is `v1.0.1`. It deploys Saleor Core `3.23.37`, Dashboard `3.23.38`, a Celery worker with Beat, PostgreSQL 15, Valkey 8.1, and a private Railway Bucket for shared media. All runtime images are pinned by digest.
 
-Upstream project: [Saleor](https://saleor.io).
+Upstream projects: [Saleor](https://saleor.io), [Saleor Core](https://github.com/saleor/saleor), and [Saleor Dashboard](https://github.com/saleor/saleor-dashboard).
 
 ## Deploy on Railway
 

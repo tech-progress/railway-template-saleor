@@ -23,8 +23,8 @@ Configure SMTP through `EMAIL_URL` before enabling customer email flows. A store
 
 ### Deployment Dependencies
 
-- Saleor Core `3.23.23`
-- Saleor Dashboard `3.23.20`
+- Saleor Core `3.23.37`
+- Saleor Dashboard `3.23.38`
 - PostgreSQL 15 with a persistent volume
 - Valkey 8.1 with a persistent volume
 - A private Railway Bucket for public and private media objects

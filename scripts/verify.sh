@@ -6,7 +6,7 @@ required=(.dockerignore .env.example .gitignore .railway/railway.ts CHANGELOG.md
 for file in "${required[@]}"; do test -f "${template_root}/${file}" || { echo "Missing ${file}" >&2; exit 1; }; done
 
 version="$(<"${template_root}/VERSION")"; [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-grep -Fq "## [${version}] - 2026-07-31" "${template_root}/CHANGELOG.md"
+grep -Eq "^## \[${version//./\\.}\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$" "${template_root}/CHANGELOG.md"
 for file in README.md PUBLISHING.md; do grep -Fq "current template release is \`v${version}\`" "${template_root}/${file}"; done
 publish_description="$(grep -E '^  --description "' "${template_root}/PUBLISHING.md" | cut -d '"' -f 2)"
 [[ -n "${publish_description}" && ${#publish_description} -le 75 ]]
@@ -29,7 +29,13 @@ jq -e '
   ([.[] | select(.name=="Saleor Dashboard")][0].deploy.healthcheckPath == "/")
 ' <<<"${graph}" >/dev/null
 
-pins=(3fc21b69182fd0d94731e12c2121faeef022ddf6bbf1398e12e19cb12add2049 c1ce2f625316bf1e02dd8070335bf3bdbaeaa388e14b094d35dd5db2f9b60cf3 3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f a038175878d66b9d274fbf8be73c0305e93798b83917647f167e18cef3c71eec)
+pins=(42ac24ce691f6b1a1f31f6e80907b6ccf77e4701bbf489e339affe9e959b7dc3 4ad44cb07f403a44a09ff95d1e78af041f70b3c0ee452e34c187aede7ede146b 3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f a038175878d66b9d274fbf8be73c0305e93798b83917647f167e18cef3c71eec)
+grep -Fq 'FROM ghcr.io/saleor/saleor:3.23.37@sha256:42ac24ce691f6b1a1f31f6e80907b6ccf77e4701bbf489e339affe9e959b7dc3' "${template_root}/Dockerfile"
+for file in compose.yaml .railway/railway.ts; do
+  grep -Fq 'ghcr.io/saleor/saleor-dashboard:3.23.38@sha256:4ad44cb07f403a44a09ff95d1e78af041f70b3c0ee452e34c187aede7ede146b' "${template_root}/${file}"
+  grep -Fq 'postgres:15-alpine@sha256:3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f' "${template_root}/${file}"
+  grep -Fq 'valkey/valkey:8.1-alpine@sha256:a038175878d66b9d274fbf8be73c0305e93798b83917647f167e18cef3c71eec' "${template_root}/${file}"
+done
 for pin in "${pins[@]}"; do grep -Rqs "${pin}" "${template_root}/Dockerfile" "${template_root}/compose.yaml" "${template_root}/.railway/railway.ts"; done
 jq -e '."Saleor API".SECRET_KEY=="${{secret(64)}}" and ."Saleor API".ADMIN_PASSWORD=="${{secret(32)}}" and ."Saleor API".DEBUG=="False" and ."Saleor API".SEND_USAGE_TELEMETRY=="False" and ."Saleor Worker".SECRET_KEY=="${{Saleor API.SECRET_KEY}}"' "${template_root}/template-defaults.json" >/dev/null
 if find "${template_root}" -type f \( -name .env -o -name '*.local' \) -print -quit | grep -q .; then echo "Local secret file found." >&2; exit 1; fi
